@@ -1,44 +1,53 @@
-using Azure.Core;
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Specialized;
 using Locksmith.NET.Azure.Configurations;
 using Locksmith.NET.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Locksmith.NET.Azure;
 
 public class BlobStorageLockService(
-    TokenCredential tokenCredential,
-    BlobServiceClient blobStorage,
-    IEnvironmentalSettingsProvider environmentalSettingsProvider)
+    IEnvironmentalSettingsProvider environmentalSettingsProvider,
+    BlobClient blobClient,
+    ILogger<BlobStorageLockService> logger)
     : IConcreteLockService
 {
+    private BlobLeaseClient? LeaseClient { get; set; }
+
     public async Task<bool> AcquireLockAsync(
-        string key,
         TimeSpan? expiration = null,
         CancellationToken cancellationToken = default)
     {
-        BlobServiceClient client = new(
-            new Uri(
-                $"https://{Environment.GetEnvironmentVariable(EnvironmentalNames.BlobStorageAcoountName)}.blob.core.windows.net"),
-            tokenCredential);
-
-        var containerClient =
-            client.GetBlobContainerClient(
-                Environment.GetEnvironmentVariable(EnvironmentalNames.BlobStorageContainerName));
-        var blobClient = containerClient.GetBlobClient(key);
-        var blobLeaseClient = blobClient.GetBlobLeaseClient();
+        LeaseClient = blobClient.GetBlobLeaseClient();
 
         var duration =
             TimeSpan.Parse(
                 environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration));
-        var blobLease =
-            await blobLeaseClient.AcquireAsync(duration, cancellationToken: cancellationToken);
+        try
+        {
+            var blobLease =
+                await LeaseClient.AcquireAsync(duration, cancellationToken: cancellationToken);
 
-        return blobLease.HasValue;
+            return blobLease.HasValue;
+        }
+        catch (RequestFailedException ex)
+        {
+            logger.LogError(ex, "Failed to acquire the lock.");
+            await LeaseClient.ReleaseAsync(cancellationToken: cancellationToken);
+        }
+
+        return false;
     }
 
-    public Task<bool> ReleaseLockAsync(string key, CancellationToken cancellationToken = default)
+    public async Task<bool> ReleaseLockAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (LeaseClient is null)
+            throw new InvalidOperationException("LeaseClient is not initialized. Call AcquireLockAsync first.");
+
+        var response = await LeaseClient.ReleaseAsync(cancellationToken: cancellationToken);
+        if (response.HasValue) return true;
+
+        throw new InvalidOperationException("Failed to release the lock.");
     }
 }
