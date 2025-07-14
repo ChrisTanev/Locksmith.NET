@@ -6,4 +6,14 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+        <Folder Include="Services\Extensions\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Azure.Identity" Version="1.14.2"/>
+        <PackageReference Include="Azure.Storage.Blobs" Version="12.26.0-beta.1"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0-preview.5.25277.114"/>
+    </ItemGroup>
+
 </Project>
