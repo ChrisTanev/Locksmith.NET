@@ -22,12 +22,10 @@ public class BlobStorageLockService(
         LeaseClient = blobClient.GetBlobLeaseClient();
 
         var duration =
-            TimeSpan.Parse(
-                environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration));
+            TimeSpan.Parse(environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration));
         try
         {
-            var blobLease =
-                await LeaseClient.AcquireAsync(duration, cancellationToken: cancellationToken);
+            var blobLease = await LeaseClient.AcquireAsync(duration, cancellationToken: cancellationToken);
 
             return blobLease.HasValue;
         }
@@ -43,10 +41,15 @@ public class BlobStorageLockService(
     public async Task<bool> ReleaseLockAsync(CancellationToken cancellationToken = default)
     {
         if (LeaseClient is null)
+        {
             throw new InvalidOperationException("LeaseClient is not initialized. Call AcquireLockAsync first.");
+        }
 
         var response = await LeaseClient.ReleaseAsync(cancellationToken: cancellationToken);
-        if (response.HasValue) return true;
+        if (response.HasValue)
+        {
+            return true;
+        }
 
         throw new InvalidOperationException("Failed to release the lock.");
     }

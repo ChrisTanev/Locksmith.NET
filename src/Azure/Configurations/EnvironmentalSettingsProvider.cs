@@ -6,8 +6,7 @@ public class EnvironmentalSettingsProvider : IEnvironmentalSettingsProvider
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(key, nameof(key));
 
-        return Environment.GetEnvironmentVariable(key) ?? throw new InvalidOperationException(
-            $"The environmental setting '{key}' is not set.");
+        return Environment.GetEnvironmentVariable(key) ?? throw new InvalidOperationException($"The environmental setting '{key}' is not set.");
     }
 
     public void SetEnvoronmentalSetting(string? key, string? value)
