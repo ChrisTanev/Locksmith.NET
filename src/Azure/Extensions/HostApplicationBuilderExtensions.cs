@@ -1,6 +1,7 @@
 using Azure.Core;
 using Azure.Storage.Blobs;
 using Locksmith.NET.Azure.Configurations;
+using Locksmith.NET.Azure.Factories;
 using Locksmith.NET.Azure.Models;
 using Locksmith.NET.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,7 @@ public static class HostApplicationBuilderExtensions
             throw new ArgumentException($"{nameof(BlobDuration.Duration)} must be between 15 seconds and 60 seconds.");
         }
 
-        builder.Services.AddSingleton<IEnvironmentalSettingsProvider, EnvironmentalSettingsProvider>(provider =>
+        builder.Services.AddSingleton<IEnvironmentalSettingsProvider, EnvironmentalSettingsProvider>(_ =>
         {
             var environmentalSettingsProvider = new EnvironmentalSettingsProvider();
             environmentalSettingsProvider.SetEnvoronmentalSetting(EnvironmentalNames.BlobStorageConnectionString, connectionString);
@@ -52,6 +53,7 @@ public static class HostApplicationBuilderExtensions
             var blobClient = containerClient.GetBlobClient(blobName);
             builder.Services.AddSingleton(blobClient);
 
+            builder.Services.AddSingleton<IBlobLeaseClientFactory, BlobLeaseClientFactory>();
             return environmentalSettingsProvider;
         });
 
