@@ -26,7 +26,7 @@ public static class HostApplicationBuilderExtensions
             throw new ArgumentException($"{nameof(BlobDuration.Duration)} must be between 15 seconds and 60 seconds.");
         }
 
-        builder.Services.AddTransient<IEnvironmentalSettingsProvider, EnvironmentalSettingsProvider>(provider =>
+        builder.Services.AddSingleton<IEnvironmentalSettingsProvider, EnvironmentalSettingsProvider>(provider =>
         {
             var environmentalSettingsProvider = new EnvironmentalSettingsProvider();
             environmentalSettingsProvider.SetEnvoronmentalSetting(EnvironmentalNames.BlobStorageConnectionString, connectionString);

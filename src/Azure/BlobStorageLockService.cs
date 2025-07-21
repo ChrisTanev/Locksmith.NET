@@ -1,7 +1,7 @@
 using Azure;
-using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Specialized;
 using Locksmith.NET.Azure.Configurations;
+using Locksmith.NET.Azure.Factories;
 using Locksmith.NET.Services;
 using Microsoft.Extensions.Logging;
 
@@ -9,7 +9,7 @@ namespace Locksmith.NET.Azure;
 
 public class BlobStorageLockService(
     IEnvironmentalSettingsProvider environmentalSettingsProvider,
-    BlobClient blobClient,
+    IBlobLeaseClientFactory blobLeaseClientFactory,
     ILogger<BlobStorageLockService> logger)
     : IConcreteLockService
 {
@@ -19,12 +19,13 @@ public class BlobStorageLockService(
         TimeSpan? expiration = null,
         CancellationToken cancellationToken = default)
     {
-        LeaseClient = blobClient.GetBlobLeaseClient();
-
-        var duration =
-            TimeSpan.Parse(environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration));
         try
         {
+            LeaseClient = blobLeaseClientFactory.Get();
+
+            var duration = TimeSpan.Parse(environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration));
+
+            //TODO  add poly retry logic
             var blobLease = await LeaseClient.AcquireAsync(duration, cancellationToken: cancellationToken);
 
             return blobLease.HasValue;
