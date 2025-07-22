@@ -1,3 +1,6 @@
+// Copyright ChrisTanev. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using Azure.Core;
 using Azure.Storage.Blobs;
 using Locksmith.NET.Azure.Configurations;
@@ -29,7 +32,7 @@ public static class HostApplicationBuilderExtensions
 
         builder.Services.AddSingleton<IEnvironmentalSettingsProvider, EnvironmentalSettingsProvider>(_ =>
         {
-            var environmentalSettingsProvider = new EnvironmentalSettingsProvider();
+            EnvironmentalSettingsProvider environmentalSettingsProvider = new();
             environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageConnectionString, connectionString);
             environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcoountName, blobStorageAccountName);
             environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageContainerName, containerName);
@@ -39,7 +42,6 @@ public static class HostApplicationBuilderExtensions
             {
                 environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration, TimeSpan.MinValue.ToString());
             }
-
             else
             {
                 environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration, blobDuration.Duration.ToString());
@@ -48,9 +50,9 @@ public static class HostApplicationBuilderExtensions
             // Register BlobClient
             BlobServiceClient client = new(new($"https://{environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcoountName)}.blob.core.windows.net"), tokenCredential);
 
-            var containerClient = client.GetBlobContainerClient(environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageContainerName));
+            BlobContainerClient? containerClient = client.GetBlobContainerClient(environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageContainerName));
 
-            var blobClient = containerClient.GetBlobClient(blobName);
+            BlobClient? blobClient = containerClient.GetBlobClient(blobName);
             builder.Services.AddSingleton(blobClient);
 
             builder.Services.AddSingleton<IBlobLeaseClientFactory, BlobLeaseClientFactory>();

@@ -1,3 +1,6 @@
+// Copyright ChrisTanev. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -14,9 +17,6 @@ public class LockManuallyHttpTrigger(ILogger<LockManuallyHttpTrigger> logger)
         FunctionContext executionContext)
     {
         logger.LogInformation("C# HTTP trigger function processed");
-
-        // Here you would implement the logic to lock manually using the provided key.
-        // This is just a placeholder for demonstration purposes.
 
         return await Task.FromResult(req.CreateResponse(HttpStatusCode.OK));
     }

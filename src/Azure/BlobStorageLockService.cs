@@ -1,4 +1,8 @@
+// Copyright ChrisTanev. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using Azure;
+using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Locksmith.NET.Azure.Configurations;
 using Locksmith.NET.Azure.Factories;
@@ -26,17 +30,20 @@ public class BlobStorageLockService(
         {
             LeaseClient = blobLeaseClientFactory.Get();
 
-            var duration = TimeSpan.Parse(environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration));
+            TimeSpan duration = TimeSpan.Parse(environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration));
 
-            //TODO  add poly retry logic
-            var blobLease = await LeaseClient.AcquireAsync(duration, cancellationToken: cancellationToken);
+            // TODO  add poly retry logic
+            Response<BlobLease>? blobLease = await LeaseClient.AcquireAsync(duration, cancellationToken: cancellationToken);
 
             return blobLease.HasValue;
         }
         catch (RequestFailedException ex)
         {
             logger.LogError(ex, "Failed to acquire the lock.");
-            await LeaseClient.ReleaseAsync(cancellationToken: cancellationToken);
+            if (LeaseClient != null)
+            {
+                await LeaseClient.ReleaseAsync(cancellationToken: cancellationToken);
+            }
         }
 
         return false;
@@ -49,7 +56,7 @@ public class BlobStorageLockService(
             throw new InvalidOperationException("LeaseClient is not initialized. Call AcquireLockAsync first.");
         }
 
-        var response = await LeaseClient.ReleaseAsync(cancellationToken: cancellationToken);
+        Response<ReleasedObjectInfo>? response = await LeaseClient.ReleaseAsync(cancellationToken: cancellationToken);
         if (response.HasValue)
         {
             return true;

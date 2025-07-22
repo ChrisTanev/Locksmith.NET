@@ -1,3 +1,6 @@
+// Copyright ChrisTanev. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using Azure.Storage.Blobs;
@@ -5,13 +8,14 @@ using Moq;
 
 namespace Locksmith.NET.UnitTests.Utilities;
 
-public abstract class UnitTestBase<TClass> where TClass : class
+public abstract class UnitTestBase<TClass>
+    where TClass : class
 {
     protected UnitTestBase()
     {
         Fixture = new Fixture().Customize(new AutoMoqCustomization());
-        // Register a mock BlobClient
-        var blobClientMock = new Mock<BlobClient>();
+
+        Mock<BlobClient> blobClientMock = new();
         Fixture.Register(() => blobClientMock.Object);
         LazySut = new(() => Fixture.Create<TClass>());
     }

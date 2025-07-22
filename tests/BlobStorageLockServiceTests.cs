@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿// Copyright ChrisTanev. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Reflection;
 using AutoFixture;
 using Azure;
 using Azure.Storage.Blobs.Models;
@@ -33,22 +36,26 @@ public class BlobStorageLockServiceTests : UnitTestBase<BlobStorageLockService>
         _environmentalProviderMock.Setup(x => x.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration))
                                   .Returns(TimeSpan.FromSeconds(15).ToString());
 
-        var blobClientMock = new Mock<BlobLeaseClient>();
+        Mock<BlobLeaseClient> blobClientMock = new();
 
         _blobClientFactoryMock.Setup(x => x.Get())
                               .Returns(blobClientMock.Object);
-        var blobLease = Fixture.Freeze<Mock<BlobLease>>();
+        Mock<BlobLease>? blobLease = Fixture.Freeze<Mock<BlobLease>>();
         blobClientMock.Setup(x => x.AcquireAsync(It.IsAny<TimeSpan>(), null, It.IsAny<CancellationToken>()))
                       .ReturnsAsync(Response.FromValue(blobLease.Object, null!));
 
         // Act
-        var result = await Sut.AcquireLockAsync();
+        bool result = await Sut.AcquireLockAsync();
 
         // Assert
         result.Should().BeTrue();
 
         _blobClientFactoryMock.Verify(x => x.Get(), Times.Once);
-        blobClientMock.Verify(x => x.AcquireAsync(It.IsAny<TimeSpan>(), null, It.IsAny<CancellationToken>()),
+        blobClientMock.Verify(
+                              x => x.AcquireAsync(
+                                                  It.IsAny<TimeSpan>(),
+                                                  null,
+                                                  It.IsAny<CancellationToken>()),
                               Times.Once);
     }
 
@@ -59,7 +66,7 @@ public class BlobStorageLockServiceTests : UnitTestBase<BlobStorageLockService>
         _environmentalProviderMock.Setup(x => x.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration))
                                   .Returns(TimeSpan.FromSeconds(15).ToString());
 
-        var blobLeaseClientMock = new Mock<BlobLeaseClient>();
+        Mock<BlobLeaseClient> blobLeaseClientMock = new();
 
         _blobClientFactoryMock.Setup(x => x.Get())
                               .Returns(blobLeaseClientMock.Object);
@@ -68,7 +75,7 @@ public class BlobStorageLockServiceTests : UnitTestBase<BlobStorageLockService>
                            .Throws(new RequestFailedException(500, "Internal Server Error"));
 
         // Act
-        var result = await Sut.AcquireLockAsync();
+        bool result = await Sut.AcquireLockAsync();
 
         // Assert
         result.Should().BeFalse();
@@ -84,8 +91,8 @@ public class BlobStorageLockServiceTests : UnitTestBase<BlobStorageLockService>
                                       It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
                            Times.Once);
 
-        blobLeaseClientMock.Verify(x => x.ReleaseAsync(It.IsAny<RequestConditions>(), It.IsAny<CancellationToken>()),
-                                   Times.Once);
+        blobLeaseClientMock.Verify(
+                                   x => x.ReleaseAsync(It.IsAny<RequestConditions>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -103,12 +110,12 @@ public class BlobStorageLockServiceTests : UnitTestBase<BlobStorageLockService>
     public async Task When_Calling_ReleaseLockAsync_And_ReleaseAsyncValue_Is_False_Throws_InvalidOperationException()
     {
         // Arrange
-        var blobLeaseClientMock = new Mock<BlobLeaseClient>();
+        Mock<BlobLeaseClient> blobLeaseClientMock = new();
         Mock<Response<ReleasedObjectInfo>> releasedObjectInfoX = new();
         blobLeaseClientMock.Setup(x => x.ReleaseAsync(It.IsAny<RequestConditions>(), It.IsAny<CancellationToken>()))
                            .ReturnsAsync(releasedObjectInfoX.Object);
 
-        var prop = typeof(BlobStorageLockService).GetProperty("LeaseClient", BindingFlags.NonPublic | BindingFlags.Instance);
+        PropertyInfo? prop = typeof(BlobStorageLockService).GetProperty("LeaseClient", BindingFlags.NonPublic | BindingFlags.Instance);
         prop!.SetValue(Sut, blobLeaseClientMock.Object);
         releasedObjectInfoX.Setup(x => x.HasValue).Returns(false);
 

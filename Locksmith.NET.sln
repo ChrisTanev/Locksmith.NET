@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln items", "sln items", "{
 		.devcontainer\devcontainer.json = .devcontainer\devcontainer.json
 		Directory.Build.props = Directory.Build.props
 		stylecop.json = stylecop.json
+		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locksmith.NET.UnitTests", "tests\Locksmith.NET.UnitTests.csproj", "{8983FBAF-9250-4BD6-ACCD-74E480B90D92}"
