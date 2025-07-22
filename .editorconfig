@@ -32,6 +32,7 @@ dotnet_diagnostic.SA0001.severity = none
 dotnet_diagnostic.SA1101.severity = none
 dotnet_diagnostic.SA1309.severity = none
 dotnet_diagnostic.SA1649.severity = none # false positive in some cases
+dotnet_diagnostic.SA1600.severity = none
 
 # Indentation preferences
 csharp_indent_block_contents = true
