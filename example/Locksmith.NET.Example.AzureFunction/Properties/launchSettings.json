@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Locksmith.NET.Example.AzureFunction": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7171",
+      "launchBrowser": false
+    }
+  }
+}
