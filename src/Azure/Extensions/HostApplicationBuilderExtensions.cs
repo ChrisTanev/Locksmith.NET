@@ -30,19 +30,19 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton<IEnvironmentalSettingsProvider, EnvironmentalSettingsProvider>(_ =>
         {
             var environmentalSettingsProvider = new EnvironmentalSettingsProvider();
-            environmentalSettingsProvider.SetEnvoronmentalSetting(EnvironmentalNames.BlobStorageConnectionString, connectionString);
-            environmentalSettingsProvider.SetEnvoronmentalSetting(EnvironmentalNames.BlobStorageAcoountName, blobStorageAccountName);
-            environmentalSettingsProvider.SetEnvoronmentalSetting(EnvironmentalNames.BlobStorageContainerName, containerName);
-            environmentalSettingsProvider.SetEnvoronmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration, containerName);
+            environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageConnectionString, connectionString);
+            environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcoountName, blobStorageAccountName);
+            environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageContainerName, containerName);
+            environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration, containerName);
 
             if (blobDuration is { Infinite: true, Duration: null, })
             {
-                environmentalSettingsProvider.SetEnvoronmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration, TimeSpan.MinValue.ToString());
+                environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration, TimeSpan.MinValue.ToString());
             }
 
             else
             {
-                environmentalSettingsProvider.SetEnvoronmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration, blobDuration.Duration.ToString());
+                environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration, blobDuration.Duration.ToString());
             }
 
             // Register BlobClient

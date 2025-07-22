@@ -4,5 +4,5 @@ public interface IEnvironmentalSettingsProvider
 {
     string GetEnvironmentalSetting(string? key);
 
-    void SetEnvoronmentalSetting(string? key, string? value);
+    void SetEnvironmentalSetting(string? key, string? value);
 }
