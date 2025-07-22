@@ -10,6 +10,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example", "example", "{366A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locksmith.NET.UnitTests", "tests\Locksmith.NET.UnitTests\Locksmith.NET.UnitTests.csproj", "{63CF522B-F067-4C63-AE96-10F2A629E252}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln items", "sln items", "{FCD4F9AF-D108-4F94-84D9-990E1122E1F2}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		Dockerfile = Dockerfile
+		global.json = global.json
+		.devcontainer\devcontainer.json = .devcontainer\devcontainer.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -7,6 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Locksmith.NET.Azure;
 
+// TODO add global usings
+// TODO add retry logic with Polly
+// TODO add directory props
 public class BlobStorageLockService(
     IEnvironmentalSettingsProvider environmentalSettingsProvider,
     IBlobLeaseClientFactory blobLeaseClientFactory,
