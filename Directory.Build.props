@@ -1,0 +1,20 @@
+<Project>
+  <ItemGroup>
+    <!-- Add StyleCop.Analyzers to all projects -->
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435" PrivateAssets="all"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- Enable StyleCop analyzers -->
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+
+    <!-- Treat StyleCop warnings as errors -->
+    <WarningsAsErrors>SA*</WarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Optional: Include a custom stylecop.json file from root directory -->
+    <AdditionalFiles Include="../stylecop.json"/>
+  </ItemGroup>
+</Project>

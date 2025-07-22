@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Locksmith.NET.csproj"/>
+        <ProjectReference Include="..\src\Locksmith.NET.csproj" />
     </ItemGroup>
 
 </Project>

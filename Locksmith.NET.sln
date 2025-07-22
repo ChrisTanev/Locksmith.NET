@@ -8,17 +8,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locksmith.NET", "src\Locksm
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example", "example", "{366A0DAC-2B73-4601-B83C-02AD032D9F7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locksmith.NET.UnitTests", "tests\Locksmith.NET.UnitTests\Locksmith.NET.UnitTests.csproj", "{63CF522B-F067-4C63-AE96-10F2A629E252}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln items", "sln items", "{FCD4F9AF-D108-4F94-84D9-990E1122E1F2}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE = LICENSE
 		Dockerfile = Dockerfile
 		global.json = global.json
 		.devcontainer\devcontainer.json = .devcontainer\devcontainer.json
+		Directory.Build.props = Directory.Build.props
+		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locksmith.NET.Example.AzureFunction", "example\Locksmith.NET.Example.AzureFunction\Locksmith.NET.Example.AzureFunction.csproj", "{4F3D8871-C3C6-4DB1-BD0F-3AC82907A76D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locksmith.NET.UnitTests", "tests\Locksmith.NET.UnitTests.csproj", "{8983FBAF-9250-4BD6-ACCD-74E480B90D92}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Azure", "Azure", "{77F45294-196B-407C-AB67-D888DE06A33A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locksmith.NET.Example.AzureFunction", "example\Locksmith.NET.Example.AzureFunction.csproj", "{22091873-3FAD-463C-BFAE-D566B062F082}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,18 +34,19 @@ Global
 		{7E421EB1-58D6-424E-A7A2-DAB5410A0018}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E421EB1-58D6-424E-A7A2-DAB5410A0018}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E421EB1-58D6-424E-A7A2-DAB5410A0018}.Release|Any CPU.Build.0 = Release|Any CPU
-		{63CF522B-F067-4C63-AE96-10F2A629E252}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{63CF522B-F067-4C63-AE96-10F2A629E252}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{63CF522B-F067-4C63-AE96-10F2A629E252}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{63CF522B-F067-4C63-AE96-10F2A629E252}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4F3D8871-C3C6-4DB1-BD0F-3AC82907A76D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4F3D8871-C3C6-4DB1-BD0F-3AC82907A76D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4F3D8871-C3C6-4DB1-BD0F-3AC82907A76D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4F3D8871-C3C6-4DB1-BD0F-3AC82907A76D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8983FBAF-9250-4BD6-ACCD-74E480B90D92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8983FBAF-9250-4BD6-ACCD-74E480B90D92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8983FBAF-9250-4BD6-ACCD-74E480B90D92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8983FBAF-9250-4BD6-ACCD-74E480B90D92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22091873-3FAD-463C-BFAE-D566B062F082}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22091873-3FAD-463C-BFAE-D566B062F082}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22091873-3FAD-463C-BFAE-D566B062F082}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22091873-3FAD-463C-BFAE-D566B062F082}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7E421EB1-58D6-424E-A7A2-DAB5410A0018} = {259F04C4-C4A8-423D-8599-2A04BE51584F}
-		{63CF522B-F067-4C63-AE96-10F2A629E252} = {095C38E8-96C8-431F-ACDB-504C212D18E8}
-		{4F3D8871-C3C6-4DB1-BD0F-3AC82907A76D} = {366A0DAC-2B73-4601-B83C-02AD032D9F7F}
+		{8983FBAF-9250-4BD6-ACCD-74E480B90D92} = {095C38E8-96C8-431F-ACDB-504C212D18E8}
+		{77F45294-196B-407C-AB67-D888DE06A33A} = {366A0DAC-2B73-4601-B83C-02AD032D9F7F}
+		{22091873-3FAD-463C-BFAE-D566B062F082} = {77F45294-196B-407C-AB67-D888DE06A33A}
 	EndGlobalSection
 EndGlobal
