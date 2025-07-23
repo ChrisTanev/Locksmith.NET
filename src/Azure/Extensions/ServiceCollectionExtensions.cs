@@ -8,14 +8,13 @@ using Locksmith.NET.Azure.Factories;
 using Locksmith.NET.Azure.Models;
 using Locksmith.NET.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Locksmith.NET.Azure.Extensions;
 
-public static class HostApplicationBuilderExtensions
+public static class ServiceCollectionExtensions
 {
     public static void RegisterBlobStorageLockService(
-        this HostApplicationBuilder builder,
+        this IServiceCollection serviceCollection,
         TokenCredential tokenCredential,
         string connectionString,
         BlobDuration blobDuration,
@@ -30,7 +29,7 @@ public static class HostApplicationBuilderExtensions
             throw new ArgumentException($"{nameof(BlobDuration.Duration)} must be between 15 seconds and 60 seconds.");
         }
 
-        builder.Services.AddSingleton<IEnvironmentalSettingsProvider, EnvironmentalSettingsProvider>(_ =>
+        serviceCollection.AddSingleton<IEnvironmentalSettingsProvider, EnvironmentalSettingsProvider>(_ =>
         {
             EnvironmentalSettingsProvider environmentalSettingsProvider = new();
             environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageConnectionString, connectionString);
@@ -53,13 +52,13 @@ public static class HostApplicationBuilderExtensions
             BlobContainerClient? containerClient = client.GetBlobContainerClient(environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageContainerName));
 
             BlobClient? blobClient = containerClient.GetBlobClient(blobName);
-            builder.Services.AddSingleton(blobClient);
+            serviceCollection.AddSingleton(blobClient);
 
-            builder.Services.AddSingleton<IBlobLeaseClientFactory, BlobLeaseClientFactory>();
+            serviceCollection.AddSingleton<IBlobLeaseClientFactory, BlobLeaseClientFactory>();
             return environmentalSettingsProvider;
         });
 
-        builder.Services.AddSingleton<IConcreteLockService, BlobStorageLockService>();
-        builder.Services.AddSingleton(tokenCredential);
+        serviceCollection.AddSingleton<IConcreteLockService, BlobStorageLockService>();
+        serviceCollection.AddSingleton(tokenCredential);
     }
 }
