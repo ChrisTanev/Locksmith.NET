@@ -1,23 +1,27 @@
 {
-  "name": "Azure Functions .NET 9 DevContainer",
-  "build": {
-    "dockerfile": "../Dockerfile",
-    "context": ".."
-    // assumes Dockerfile is in .devcontainer folder
-  },
-  "workspaceFolder": "/workspace",
-  "settings": {
-    "terminal.integrated.shell.linux": "/bin/bash"
-  },
-  "extensions": [
-    "ms-dotnettools.csharp",
-    "ms-azuretools.vscode-azurefunctions",
-    "ms-azuretools.vscode-azureresourcegroups",
-    "ms-azuretools.vscode-azurestorage"
-  ],
-  "forwardPorts": [
-    7071
-  ],
-  "postCreateCommand": "dotnet --version && func --version",
-  "remoteUser": "root"
+    "name": "Azure Functions .NET 9 DevContainer",
+    "build": {
+        "dockerfile": "../Dockerfile",
+        "context": ".."
+        // assumes Dockerfile is in .devcontainer folder
+    },
+    "workspaceFolder": "/workspace",
+    "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+    },
+    "extensions": [
+        "ms-dotnettools.csharp",
+        "ms-azuretools.vscode-azurefunctions",
+        "ms-azuretools.vscode-azureresourcegroups",
+        "ms-azuretools.vscode-azurestorage"
+    ],
+    "forwardPorts": [
+        7071
+    ],
+    "postCreateCommand": "dotnet --version && func --version",
+    "remoteUser": "root",
+    "runArgs": [
+        "--user",
+        "${localEnv:UID}:${localEnv:GID}"
+    ]
 }

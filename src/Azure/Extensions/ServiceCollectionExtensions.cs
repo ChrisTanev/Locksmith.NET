@@ -29,36 +29,38 @@ public static class ServiceCollectionExtensions
             throw new ArgumentException($"{nameof(BlobDuration.Duration)} must be between 15 seconds and 60 seconds.");
         }
 
-        serviceCollection.AddSingleton<IEnvironmentalSettingsProvider, EnvironmentalSettingsProvider>(_ =>
+        var environmentalSettingsProvider = new EnvironmentalSettingsProvider();
+        environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageConnectionString, connectionString);
+        environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAccountName, blobStorageAccountName);
+        environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageContainerName, containerName);
+
+        if (blobDuration is { Infinite: true, Duration: null, })
         {
-            EnvironmentalSettingsProvider environmentalSettingsProvider = new();
-            environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageConnectionString, connectionString);
-            environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcoountName, blobStorageAccountName);
-            environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageContainerName, containerName);
-            environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration, containerName);
+            environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration, TimeSpan.MinValue.ToString());
+        }
+        else
+        {
+            environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration, blobDuration.Duration.ToString());
+        }
 
-            if (blobDuration is { Infinite: true, Duration: null, })
-            {
-                environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration, TimeSpan.MinValue.ToString());
-            }
-            else
-            {
-                environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration, blobDuration.Duration.ToString());
-            }
+        // Register EnvironmentalSettingsProvider as singleton
+        serviceCollection.AddSingleton<IEnvironmentalSettingsProvider>(environmentalSettingsProvider);
 
-            // Register BlobClient
-            BlobServiceClient client = new(new($"https://{environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcoountName)}.blob.core.windows.net"), tokenCredential);
+        // Create BlobServiceClient, container client and BlobClient outside of factory
+        BlobServiceClient client = new(new($"https://{environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAccountName)}.blob.core.windows.net"), tokenCredential);
 
-            BlobContainerClient? containerClient = client.GetBlobContainerClient(environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageContainerName));
+        BlobContainerClient containerClient = client.GetBlobContainerClient(containerName);
+        BlobClient blobClient = containerClient.GetBlobClient(blobName);
 
-            BlobClient? blobClient = containerClient.GetBlobClient(blobName);
-            serviceCollection.AddSingleton(blobClient);
+        serviceCollection.AddSingleton(blobClient);
 
-            serviceCollection.AddSingleton<IBlobLeaseClientFactory, BlobLeaseClientFactory>();
-            return environmentalSettingsProvider;
-        });
+        // Register your factory here
+        serviceCollection.AddSingleton<IBlobLeaseClientFactory, BlobLeaseClientFactory>();
 
+        // Register your lock service
         serviceCollection.AddSingleton<IConcreteLockService, BlobStorageLockService>();
+
+        // Register token credential
         serviceCollection.AddSingleton(tokenCredential);
     }
 }

@@ -3,13 +3,13 @@
 
 namespace Locksmith.NET.Azure.Configurations;
 
-public class EnvironmentalNames
+public static class EnvironmentalNames
 {
-    public static string BlobStorageAcoountName { get; set; } = string.Empty;
+    public static string BlobStorageAccountName { get; set; } = nameof(BlobStorageAccountName);
 
-    public static string BlobStorageConnectionString { get; set; } = string.Empty;
+    public static string BlobStorageConnectionString { get; set; } = nameof(BlobStorageConnectionString);
 
-    public static string BlobStorageContainerName { get; set; } = string.Empty;
+    public static string BlobStorageContainerName { get; set; } = nameof(BlobStorageContainerName);
 
-    public static string BlobStorageAcquireDuration { get; set; } = string.Empty;
+    public static string BlobStorageAcquireDuration { get; set; } = nameof(BlobStorageAcquireDuration);
 }
