@@ -28,7 +28,7 @@ builder.Services.RegisterBlobStorageLockService(
     new DefaultAzureCredential(),
     "UseDevelopmentStorage=true",
     new(TimeSpan.FromSeconds(30)),
-    "myaccount",
+    "devstoreaccount1",
     "lock-blob");
 
 builder.Build().Run();

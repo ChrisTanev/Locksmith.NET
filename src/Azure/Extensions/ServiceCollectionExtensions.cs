@@ -47,8 +47,8 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<IEnvironmentalSettingsProvider>(environmentalSettingsProvider);
 
         // Create BlobServiceClient, container client and BlobClient outside of factory
-        BlobServiceClient client = new(new($"https://{environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAccountName)}.blob.core.windows.net"), tokenCredential);
-
+        // BlobServiceClient client = new(new($"https://{environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.AzureWebJobsStorage)}.blob.core.windows.net"), tokenCredential);
+        BlobServiceClient client = new("UseDevelopmentStorage=true");
         BlobContainerClient containerClient = client.GetBlobContainerClient(containerName);
         BlobClient blobClient = containerClient.GetBlobClient(blobName);
 

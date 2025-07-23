@@ -7,6 +7,8 @@ public static class EnvironmentalNames
 {
     public static string BlobStorageAccountName { get; set; } = nameof(BlobStorageAccountName);
 
+    public static string AzureWebJobsStorage { get; set; } = nameof(AzureWebJobsStorage);
+
     public static string BlobStorageConnectionString { get; set; } = nameof(BlobStorageConnectionString);
 
     public static string BlobStorageContainerName { get; set; } = nameof(BlobStorageContainerName);
