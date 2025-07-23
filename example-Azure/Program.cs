@@ -3,7 +3,6 @@
 
 using Azure.Identity;
 using Locksmith.NET.Azure.Extensions;
-using Locksmith.NET.Azure.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,11 +18,12 @@ builder.Services
 
 builder.Services.AddLogging();
 
+builder.Services.BuildServiceProvider();
 builder.Services.RegisterBlobStorageLockService(
-    tokenCredential: new DefaultAzureCredential(),
-    connectionString: "UseDevelopmentStorage=true",
-    blobDuration: new BlobDuration(TimeSpan.FromSeconds(30)),
-    blobStorageAccountName: "myaccount",
-    blobName: "lock-blob");
+                                                new DefaultAzureCredential(),
+                                                "UseDevelopmentStorage=true",
+                                                new(TimeSpan.FromSeconds(30)),
+                                                "myaccount",
+                                                "lock-blob");
 
 builder.Build().Run();
