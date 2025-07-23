@@ -13,6 +13,14 @@ local.settings.json
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# Ignore Azurite local storage files
+AzuriteConfig
+__azurite_db_blob__.json
+__azurite_db_blob_extent__.json
+__azurite_db_queue__.json
+__azurite_db_queue_extent__.json
+__azurite_db_table__.json
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
