@@ -30,7 +30,7 @@ public class BlobStorageLockService(
         {
             LeaseClient = blobLeaseClientFactory.Get();
 
-            TimeSpan duration = TimeSpan.Parse(environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration));
+            TimeSpan duration = TimeSpan.Parse(environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobAcquireDuration));
 
             // TODO  add poly retry logic
             Response<BlobLease>? blobLease = await LeaseClient.AcquireAsync(duration, cancellationToken: cancellationToken);

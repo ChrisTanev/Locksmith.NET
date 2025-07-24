@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Azure.Core;
-using Azure.Storage.Blobs;
 using Locksmith.NET.Azure.Configurations;
 using Locksmith.NET.Azure.Factories;
 using Locksmith.NET.Azure.Models;
@@ -20,8 +19,7 @@ public static class ServiceCollectionExtensions
         BlobDuration blobDuration,
         string blobStorageAccountName,
         string blobName,
-        string containerName = "locks",
-        string blobPrefix = "lock-")
+        string blobContainerName = "locks")
     {
         if ((!blobDuration.Infinite && blobDuration.Duration > TimeSpan.FromSeconds(60)) ||
             blobDuration.Duration < TimeSpan.FromSeconds(15))
@@ -29,38 +27,48 @@ public static class ServiceCollectionExtensions
             throw new ArgumentException($"{nameof(BlobDuration.Duration)} must be between 15 seconds and 60 seconds.");
         }
 
-        var environmentalSettingsProvider = new EnvironmentalSettingsProvider();
-        environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageConnectionString, connectionString);
-        environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAccountName, blobStorageAccountName);
-        environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageContainerName, containerName);
+        EnvironmentalSettingsProvider environmentalSettingsProvider = new();
 
-        if (blobDuration is { Infinite: true, Duration: null, })
-        {
-            environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration, TimeSpan.MinValue.ToString());
-        }
-        else
-        {
-            environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration, blobDuration.Duration.ToString());
-        }
+        SetupEnvironmentalVariables(
+            environmentalSettingsProvider,
+            connectionString,
+            blobStorageAccountName,
+            blobContainerName,
+            blobName,
+            blobDuration);
 
-        // Register EnvironmentalSettingsProvider as singleton
         serviceCollection.AddSingleton<IEnvironmentalSettingsProvider>(environmentalSettingsProvider);
 
-        // Create BlobServiceClient, container client and BlobClient outside of factory
-        // BlobServiceClient client = new(new($"https://{environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.AzureWebJobsStorage)}.blob.core.windows.net"), tokenCredential);
-        BlobServiceClient client = new("UseDevelopmentStorage=true");
-        BlobContainerClient containerClient = client.GetBlobContainerClient(containerName);
-        BlobClient blobClient = containerClient.GetBlobClient(blobName);
-
-        serviceCollection.AddSingleton(blobClient);
-
-        // Register your factory here
         serviceCollection.AddSingleton<IBlobLeaseClientFactory, BlobLeaseClientFactory>();
+        serviceCollection.AddSingleton<IBlobClientFactory, BlobClientFactory>();
 
-        // Register your lock service
         serviceCollection.AddSingleton<IConcreteLockService, BlobStorageLockService>();
-
-        // Register token credential
         serviceCollection.AddSingleton(tokenCredential);
+    }
+
+    private static void SetupEnvironmentalVariables(
+        IEnvironmentalSettingsProvider environmentalSettingsProvider,
+        string connectionString,
+        string blobStorageAccountName,
+        string blobContainerName,
+        string blobName,
+        BlobDuration blobDuration)
+    {
+        environmentalSettingsProvider.SetEnvironmentalSetting(
+            EnvironmentalNames.BlobConnectionString,
+            connectionString);
+
+        environmentalSettingsProvider.SetEnvironmentalSetting(
+            EnvironmentalNames.BlobAccountName,
+            blobStorageAccountName);
+
+        environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobContainerName, blobContainerName);
+
+        environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobName, blobName);
+
+        string? timespan = blobDuration is { Infinite: true, Duration: null }
+            ? TimeSpan.MinValue.ToString()
+            : blobDuration.Duration.ToString();
+        environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobAcquireDuration, timespan);
     }
 }

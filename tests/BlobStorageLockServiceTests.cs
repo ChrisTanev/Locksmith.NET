@@ -33,7 +33,7 @@ public class BlobStorageLockServiceTests : UnitTestBase<BlobStorageLockService>
     public async Task When_Calling_AcquireLockAsync_And_LeaseIsAcquired_Returns_True()
     {
         // Arrange
-        _environmentalProviderMock.Setup(x => x.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration))
+        _environmentalProviderMock.Setup(x => x.GetEnvironmentalSetting(EnvironmentalNames.BlobAcquireDuration))
                                   .Returns(TimeSpan.FromSeconds(15).ToString());
 
         Mock<BlobLeaseClient> blobClientMock = new();
@@ -63,7 +63,7 @@ public class BlobStorageLockServiceTests : UnitTestBase<BlobStorageLockService>
     public async Task When_Calling_AcquireLockAsync_And_RequestFailedExceptionIsTrown_Its_Caught_And_Logged_And_Lease_Is_Released()
     {
         // Arrange
-        _environmentalProviderMock.Setup(x => x.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration))
+        _environmentalProviderMock.Setup(x => x.GetEnvironmentalSetting(EnvironmentalNames.BlobAcquireDuration))
                                   .Returns(TimeSpan.FromSeconds(15).ToString());
 
         Mock<BlobLeaseClient> blobLeaseClientMock = new();
