@@ -1,18 +1,28 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0
 
-# Install basic tools
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    curl gnupg ca-certificates lsb-release apt-transport-https wget
+    curl gnupg ca-certificates lsb-release apt-transport-https wget gnupg2
 
-# Configure Microsoft package feed (correct one for Core Tools)
-RUN wget -qO packages-microsoft-prod.deb \
-     https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb \
- && dpkg -i packages-microsoft-prod.deb
+# Install Node.js (needed for Azurite and Core Tools)
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs
 
-# Update and install Core Tools v4
-RUN apt-get update \
- && apt-get install -y azure-functions-core-tools-4
+# Install Azurite globally
+RUN npm install -g azurite
 
+# ✅ Install latest Azure Functions Core Tools v4 from npm (NOT apt)
+# This ensures compatibility with .NET 8/9
+RUN npm install -g azure-functions-core-tools@4 --unsafe-perm true
+
+# Set working directory
 WORKDIR /workspace
-EXPOSE 7071
+
+# Expose common Azure Functions & Azurite ports
+EXPOSE 7071 10000 10001 10002
+
+# Fix execute permissions for in-proc host binary, if needed (defensive)
+RUN chmod +x /usr/lib/azure-functions-core-tools-4/in-proc6/func || true
+
+# Set default shell
 CMD ["bash"]

@@ -18,14 +18,14 @@ namespace Locksmith.NET.UnitTests;
 
 public class BlobStorageLockServiceTests : UnitTestBase<BlobStorageLockService>
 {
-    private readonly Mock<IBlobLeaseClientFactory> _blobClientFactoryMock;
+    private readonly Mock<IBlobClientFactory> _blobClientFactoryMock;
     private readonly Mock<IEnvironmentalSettingsProvider> _environmentalProviderMock;
     private readonly Mock<ILogger<BlobStorageLockService>> _loggerMock;
 
     public BlobStorageLockServiceTests()
     {
         _environmentalProviderMock = Fixture.Freeze<Mock<IEnvironmentalSettingsProvider>>();
-        _blobClientFactoryMock = Fixture.Freeze<Mock<IBlobLeaseClientFactory>>();
+        _blobClientFactoryMock = Fixture.Freeze<Mock<IBlobClientFactory>>();
         _loggerMock = Fixture.Freeze<Mock<ILogger<BlobStorageLockService>>>();
     }
 
@@ -33,25 +33,28 @@ public class BlobStorageLockServiceTests : UnitTestBase<BlobStorageLockService>
     public async Task When_Calling_AcquireLockAsync_And_LeaseIsAcquired_Returns_True()
     {
         // Arrange
-        _environmentalProviderMock.Setup(x => x.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration))
+        string blobName = Fixture.Create<string>();
+
+        _environmentalProviderMock.Setup(x => x.GetEnvironmentalSetting(EnvironmentalNames.BlobAcquireDuration))
                                   .Returns(TimeSpan.FromSeconds(15).ToString());
 
-        Mock<BlobLeaseClient> blobClientMock = new();
+        Mock<BlobLeaseClient> blobLeaseClient = new();
 
-        _blobClientFactoryMock.Setup(x => x.Get())
-                              .Returns(blobClientMock.Object);
+        _blobClientFactoryMock.Setup(x => x.GetBlobLeaseClientAsync(blobName))
+                              .ReturnsAsync(blobLeaseClient.Object);
+
         Mock<BlobLease>? blobLease = Fixture.Freeze<Mock<BlobLease>>();
-        blobClientMock.Setup(x => x.AcquireAsync(It.IsAny<TimeSpan>(), null, It.IsAny<CancellationToken>()))
+        blobLeaseClient.Setup(x => x.AcquireAsync(It.IsAny<TimeSpan>(), null, It.IsAny<CancellationToken>()))
                       .ReturnsAsync(Response.FromValue(blobLease.Object, null!));
 
         // Act
-        bool result = await Sut.AcquireLockAsync();
+        bool result = await Sut.AcquireLockAsync(blobName);
 
         // Assert
         result.Should().BeTrue();
 
-        _blobClientFactoryMock.Verify(x => x.Get(), Times.Once);
-        blobClientMock.Verify(
+        _blobClientFactoryMock.Verify(x => x.GetBlobLeaseClientAsync(blobName), Times.Once);
+        blobLeaseClient.Verify(
                               x => x.AcquireAsync(
                                                   It.IsAny<TimeSpan>(),
                                                   null,
@@ -63,24 +66,26 @@ public class BlobStorageLockServiceTests : UnitTestBase<BlobStorageLockService>
     public async Task When_Calling_AcquireLockAsync_And_RequestFailedExceptionIsTrown_Its_Caught_And_Logged_And_Lease_Is_Released()
     {
         // Arrange
-        _environmentalProviderMock.Setup(x => x.GetEnvironmentalSetting(EnvironmentalNames.BlobStorageAcquireDuration))
+        string blobName = Fixture.Create<string>();
+
+        _environmentalProviderMock.Setup(x => x.GetEnvironmentalSetting(EnvironmentalNames.BlobAcquireDuration))
                                   .Returns(TimeSpan.FromSeconds(15).ToString());
 
         Mock<BlobLeaseClient> blobLeaseClientMock = new();
 
-        _blobClientFactoryMock.Setup(x => x.Get())
-                              .Returns(blobLeaseClientMock.Object);
+        _blobClientFactoryMock.Setup(x => x.GetBlobLeaseClientAsync(blobName))
+                              .ReturnsAsync(blobLeaseClientMock.Object);
 
         blobLeaseClientMock.Setup(x => x.AcquireAsync(It.IsAny<TimeSpan>(), null, It.IsAny<CancellationToken>()))
                            .Throws(new RequestFailedException(500, "Internal Server Error"));
 
         // Act
-        bool result = await Sut.AcquireLockAsync();
+        bool result = await Sut.AcquireLockAsync(blobName);
 
         // Assert
         result.Should().BeFalse();
 
-        _blobClientFactoryMock.Verify(x => x.Get(), Times.Once);
+        _blobClientFactoryMock.Verify(x => x.GetBlobLeaseClientAsync(blobName), Times.Once);
 
         _loggerMock.Verify(
                            x => x.Log(
