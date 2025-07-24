@@ -12,8 +12,8 @@ using Microsoft.Extensions.Logging;
 namespace Locksmith.NET.Azure;
 
 // TODO add global usings
-// TODO add retry logic with Polly
-// TODO add directory props
+// TODO add retry logic with Pollys
+// TODO utilize directory props deps
 public class BlobStorageLockService(
     IEnvironmentalSettingsProvider environmentalSettingsProvider,
     IBlobClientFactory blobClientFactory,
@@ -35,7 +35,6 @@ public class BlobStorageLockService(
 
             TimeSpan duration = TimeSpan.Parse(environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobAcquireDuration));
 
-            // TODO  add poly retry logic
             Response<BlobLease>? blobLease = await LeaseClient.AcquireAsync(duration, cancellationToken: cancellationToken);
 
             return blobLease.HasValue;
