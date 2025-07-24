@@ -28,7 +28,11 @@ public class LockManuallyHttpTrigger(
 
             bool isLocked = await lockService.AcquireLockAsync(blobName, TimeSpan.Parse(timespanDuration), executionContext.CancellationToken);
 
-            logger.LogInformation("{RunManuallyHttpTrigger} function with Invocation Id= {Id} is locked= {IsLocked}", nameof(RunManuallyHttpTrigger), executionContext.InvocationId, isLocked);
+            logger.LogInformation(
+                "{RunManuallyHttpTrigger} function with Invocation Id= {Id} is locked= {IsLocked}",
+                nameof(RunManuallyHttpTrigger),
+                executionContext.InvocationId,
+                isLocked);
 
             // Simulating some work
             await Task.Delay(TimeSpan.FromSeconds(15), executionContext.CancellationToken);
@@ -37,7 +41,11 @@ public class LockManuallyHttpTrigger(
 
             bool isUnlocked = await lockService.ReleaseLockAsync(executionContext.CancellationToken);
 
-            logger.LogInformation("{RunManuallyHttpTrigger} function with Invocation Id= {Id} is unlocked= {isUnlocked}", nameof(RunManuallyHttpTrigger), executionContext.InvocationId, isUnlocked);
+            logger.LogInformation(
+                "{RunManuallyHttpTrigger} function with Invocation Id= {Id} is unlocked= {isUnlocked}",
+                nameof(RunManuallyHttpTrigger),
+                executionContext.InvocationId,
+                isUnlocked);
 
             return httpResponseData;
         }
