@@ -23,7 +23,7 @@ public class LockManuallyHttpTrigger(ILogger<LockManuallyHttpTrigger> logger, IC
         string environmentalSettings = environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobAcquireDuration);
         bool isLocked = await lockService.AcquireLockAsync(TimeSpan.Parse(environmentalSettings), executionContext.CancellationToken);
         logger.LogInformation("HTTP trigger function is locked: {IsLocked}", isLocked);
-
+        await Task.Delay(TimeSpan.FromSeconds(15), executionContext.CancellationToken);
         HttpResponseData httpResponseData = await Task.FromResult(req.CreateResponse(HttpStatusCode.OK));
 
         bool isUnlocked = await lockService.ReleaseLockAsync(executionContext.CancellationToken);
