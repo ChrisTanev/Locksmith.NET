@@ -18,7 +18,6 @@ public static class ServiceCollectionExtensions
         string connectionString,
         BlobDuration blobDuration,
         string blobStorageAccountName,
-        string blobName,
         string blobContainerName = "locks")
     {
         if ((!blobDuration.Infinite && blobDuration.Duration > TimeSpan.FromSeconds(60)) ||
@@ -34,15 +33,12 @@ public static class ServiceCollectionExtensions
             connectionString,
             blobStorageAccountName,
             blobContainerName,
-            blobName,
             blobDuration);
 
+        serviceCollection.AddTransient<ILockService, BlobStorageLockService>();
+
         serviceCollection.AddSingleton<IEnvironmentalSettingsProvider>(environmentalSettingsProvider);
-
-        serviceCollection.AddSingleton<IBlobLeaseClientFactory, BlobLeaseClientFactory>();
         serviceCollection.AddSingleton<IBlobClientFactory, BlobClientFactory>();
-
-        serviceCollection.AddSingleton<IConcreteLockService, BlobStorageLockService>();
         serviceCollection.AddSingleton(tokenCredential);
     }
 
@@ -51,20 +47,11 @@ public static class ServiceCollectionExtensions
         string connectionString,
         string blobStorageAccountName,
         string blobContainerName,
-        string blobName,
         BlobDuration blobDuration)
     {
-        environmentalSettingsProvider.SetEnvironmentalSetting(
-            EnvironmentalNames.BlobConnectionString,
-            connectionString);
-
-        environmentalSettingsProvider.SetEnvironmentalSetting(
-            EnvironmentalNames.BlobAccountName,
-            blobStorageAccountName);
-
+        environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobConnectionString, connectionString);
+        environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobAccountName, blobStorageAccountName);
         environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobContainerName, blobContainerName);
-
-        environmentalSettingsProvider.SetEnvironmentalSetting(EnvironmentalNames.BlobName, blobName);
 
         string? timespan = blobDuration is { Infinite: true, Duration: null }
             ? TimeSpan.MinValue.ToString()

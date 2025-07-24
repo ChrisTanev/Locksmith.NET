@@ -16,19 +16,22 @@ namespace Locksmith.NET.Azure;
 // TODO add directory props
 public class BlobStorageLockService(
     IEnvironmentalSettingsProvider environmentalSettingsProvider,
-    IBlobLeaseClientFactory blobLeaseClientFactory,
+    IBlobClientFactory blobClientFactory,
     ILogger<BlobStorageLockService> logger)
-    : IConcreteLockService
+    : ILockService
 {
     private BlobLeaseClient? LeaseClient { get; set; }
 
     public async Task<bool> AcquireLockAsync(
+        string blobName,
         TimeSpan? expiration = null,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(blobName);
+
         try
         {
-            LeaseClient = blobLeaseClientFactory.Get();
+            LeaseClient = await blobClientFactory.GetBlobLeaseClientAsync(blobName);
 
             TimeSpan duration = TimeSpan.Parse(environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobAcquireDuration));
 

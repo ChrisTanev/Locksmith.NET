@@ -5,15 +5,11 @@ namespace Locksmith.NET.Azure.Configurations;
 
 public static class EnvironmentalNames
 {
-    public static string AzureWebJobsStorage { get; set; } = nameof(AzureWebJobsStorage);
-
     public static string BlobAccountName { get; set; } = nameof(BlobAccountName);
 
     public static string BlobConnectionString { get; set; } = nameof(BlobConnectionString);
 
     public static string BlobContainerName { get; set; } = nameof(BlobContainerName);
-
-    public static string BlobName { get; set; } = nameof(BlobName);
 
     public static string BlobAcquireDuration { get; set; } = nameof(BlobAcquireDuration);
 }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Net;
+using Azure;
 using Locksmith.NET.Azure.Configurations;
 using Locksmith.NET.Services;
 using Microsoft.Azure.Functions.Worker;
@@ -10,25 +11,45 @@ using Microsoft.Extensions.Logging;
 
 namespace Locksmith.NET.Example.AzureFunction;
 
-public class LockManuallyHttpTrigger(ILogger<LockManuallyHttpTrigger> logger, IConcreteLockService lockService, IEnvironmentalSettingsProvider environmentalSettingsProvider)
+public class LockManuallyHttpTrigger(
+    ILogger<LockManuallyHttpTrigger> logger,
+    ILockService lockService,
+    IEnvironmentalSettingsProvider environmentalSettingsProvider)
 {
     [Function(nameof(RunManuallyHttpTrigger))]
     public async Task<HttpResponseData> RunManuallyHttpTrigger(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get")]
-        HttpRequestData req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "RunManuallyHttpTrigger/{blobName}")] HttpRequestData req,
+        string blobName,
         FunctionContext executionContext)
     {
-        logger.LogInformation("C# HTTP trigger function processed");
+        try
+        {
+            string timespanDuration = environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobAcquireDuration);
 
-        string environmentalSettings = environmentalSettingsProvider.GetEnvironmentalSetting(EnvironmentalNames.BlobAcquireDuration);
-        bool isLocked = await lockService.AcquireLockAsync(TimeSpan.Parse(environmentalSettings), executionContext.CancellationToken);
-        logger.LogInformation("HTTP trigger function is locked: {IsLocked}", isLocked);
-        await Task.Delay(TimeSpan.FromSeconds(15), executionContext.CancellationToken);
-        HttpResponseData httpResponseData = await Task.FromResult(req.CreateResponse(HttpStatusCode.OK));
+            bool isLocked = await lockService.AcquireLockAsync(blobName, TimeSpan.Parse(timespanDuration), executionContext.CancellationToken);
 
-        bool isUnlocked = await lockService.ReleaseLockAsync(executionContext.CancellationToken);
-        logger.LogInformation("HTTP trigger function is unlocked: {IsUnlocked}", isUnlocked);
+            logger.LogInformation("{RunManuallyHttpTrigger} function with Invocation Id= {Id} is locked= {IsLocked}", nameof(RunManuallyHttpTrigger), executionContext.InvocationId, isLocked);
 
-        return httpResponseData;
+            // Simulating some work
+            await Task.Delay(TimeSpan.FromSeconds(15), executionContext.CancellationToken);
+
+            HttpResponseData httpResponseData = await Task.FromResult(req.CreateResponse(HttpStatusCode.OK));
+
+            bool isUnlocked = await lockService.ReleaseLockAsync(executionContext.CancellationToken);
+
+            logger.LogInformation("{RunManuallyHttpTrigger} function with Invocation Id= {Id} is unlocked= {isUnlocked}", nameof(RunManuallyHttpTrigger), executionContext.InvocationId, isUnlocked);
+
+            return httpResponseData;
+        }
+        catch (RequestFailedException e)
+        {
+            logger.LogError(e, "Invocation with id {Id} failed to acquire the lock.", executionContext.InvocationId);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "{Func} threw exception", nameof(RunManuallyHttpTrigger));
+        }
+
+        return req.CreateResponse(HttpStatusCode.InternalServerError);
     }
 }
