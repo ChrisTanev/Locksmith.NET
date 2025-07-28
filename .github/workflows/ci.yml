@@ -24,9 +24,14 @@ jobs:
       - name: Restore NuGet packages
         run: dotnet restore ${{ env.SOLUTION_PATH }}
 
+      - name: Install SonarScanner
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Add dotnet tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
       - name: SonarCloud Begin
         run: |
-          export PATH="$PATH:/home/runner/.dotnet/tools"
           dotnet sonarscanner begin \
             /k:"ChrisTanev_Locksmith.NET" \
             /o:"bitwiseorg" \
@@ -40,5 +45,4 @@ jobs:
 
       - name: SonarCloud End
         run: |
-          export PATH="$PATH:/home/runner/.dotnet/tools"
           dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
