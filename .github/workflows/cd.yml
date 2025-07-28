@@ -27,6 +27,9 @@ jobs:
       - name: Build
         run: dotnet build src/Locksmith.NET.csproj --configuration Release --no-restore
 
+      - name: Run unit tests
+        run: dotnet test tests/Locksmith.NET.UnitTests.csproj --no-restore --verbosity normal
+
       - name: Extract version from tag
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
