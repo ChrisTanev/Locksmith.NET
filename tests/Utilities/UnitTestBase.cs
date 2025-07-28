@@ -14,7 +14,6 @@ public abstract class UnitTestBase<TClass>
     protected UnitTestBase()
     {
         Fixture = new Fixture().Customize(new AutoMoqCustomization());
-
         Mock<BlobClient> blobClientMock = new();
         Fixture.Register(() => blobClientMock.Object);
         LazySut = new Lazy<TClass>(() => Fixture.Create<TClass>());

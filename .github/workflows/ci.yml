@@ -24,15 +24,25 @@ jobs:
       - name: Restore NuGet packages
         run: dotnet restore ${{ env.SOLUTION_PATH }}
 
+      - name: Install SonarScanner
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Add dotnet tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: SonarCloud Begin
+        run: |
+          dotnet sonarscanner begin \
+            /k:"ChrisTanev_Locksmith.NET" \
+            /o:"bitwiseorg" \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
       - name: Build solution
         run: dotnet build ${{ env.SOLUTION_PATH }} --configuration Release --no-restore
 
       - name: Run unit tests
-        run: dotnet test ${{ env.SOLUTION_PATH }} --no-restore --verbosity normal
+        run: dotnet test tests/Locksmith.NET.UnitTests.csproj --no-restore --verbosity normal --collect:"XPlat Code Coverage"
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
-        with:
-          organization: bitwiseorg
-          projectKey: ChrisTanev_Locksmith.NET     # Replace with your SonarCloud project key
-          token: ${{ secrets.SONAR_TOKEN }}
+      - name: SonarCloud End
+        run: |
+          dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
