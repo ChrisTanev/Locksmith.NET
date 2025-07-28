@@ -3,6 +3,6 @@
     "Values": {
         "AzureWebJobsStorage": "UseDevelopmentStorage=true",
         "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-        "Functions__Worker__HostEndpoint": "http://localhost:7071",
+        "Functions__Worker__HostEndpoint": "http://localhost:7071"
     }
 }
