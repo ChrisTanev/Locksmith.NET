@@ -17,7 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln items", "sln items", "{
 		Directory.Build.props = Directory.Build.props
 		stylecop.json = stylecop.json
 		.editorconfig = .editorconfig
-		.github\workflows\ci.yml = .github\workflows\ci.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locksmith.NET.UnitTests", "tests\Locksmith.NET.UnitTests.csproj", "{8983FBAF-9250-4BD6-ACCD-74E480B90D92}"
@@ -25,6 +24,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Azure", "Azure", "{77F45294-196B-407C-AB67-D888DE06A33A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locksmith.NET.Example.AzureFunction", "example-Azure\Locksmith.NET.Example.AzureFunction.csproj", "{941EDC00-DF0B-4855-A7DA-C7F67A9B2A13}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI/CD", "CI/CD", "{8B315970-813E-4CCB-A720-517F8C5B8DB5}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci.yml = .github\workflows\ci.yml
+		.github\workflows\cd.yml = .github\workflows\cd.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,5 +55,6 @@ Global
 		{8983FBAF-9250-4BD6-ACCD-74E480B90D92} = {095C38E8-96C8-431F-ACDB-504C212D18E8}
 		{77F45294-196B-407C-AB67-D888DE06A33A} = {366A0DAC-2B73-4601-B83C-02AD032D9F7F}
 		{941EDC00-DF0B-4855-A7DA-C7F67A9B2A13} = {77F45294-196B-407C-AB67-D888DE06A33A}
+		{8B315970-813E-4CCB-A720-517F8C5B8DB5} = {FCD4F9AF-D108-4F94-84D9-990E1122E1F2}
 	EndGlobalSection
 EndGlobal

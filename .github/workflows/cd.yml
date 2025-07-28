@@ -22,7 +22,7 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore
-        run: dotnet restore Locksmith.NET.csproj
+        run: dotnet restore src/Locksmith.NET.csproj
 
       - name: Build
         run: dotnet build src/Locksmith.NET.csproj --configuration Release --no-restore
