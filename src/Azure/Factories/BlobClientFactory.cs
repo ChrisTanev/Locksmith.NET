@@ -39,7 +39,7 @@ public class BlobClientFactory(IEnvironmentalSettingsProvider environmentalSetti
 
         if (await blobClient.ExistsAsync())
         {
-            return await Task.FromResult(blobClient);
+            return blobClient;
         }
 
         using MemoryStream emptyStream = new([]);

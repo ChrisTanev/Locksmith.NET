@@ -93,7 +93,7 @@ public class LockManuallyHttpTriggerTests : UnitTestBase<LockManuallyHttpTrigger
 
         _lockServiceMock
         .Setup(x => x.AcquireLockAsync(blobName, It.IsAny<TimeSpan>(), It.IsAny<CancellationToken>()))
-        .Returns(Task.FromException<bool>(new RequestFailedException("Simulated failure")));
+        .ThrowsAsync(new RequestFailedException("Simulated failure"));
         _environmentalProviderMock.Setup(x => x.GetEnvironmentalSetting(EnvironmentalNames.BlobAcquireDuration))
             .Returns(TimeSpan.FromSeconds(15).ToString());
 
@@ -109,7 +109,7 @@ public class LockManuallyHttpTriggerTests : UnitTestBase<LockManuallyHttpTrigger
                 LogLevel.Information,
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((v, t) => v.ToString()!
-                    .Contains($"RunManuallyHttpTrigger function with Invocation Id= {invocationId} is locked= True")),
+                    .Contains($"RunManuallyHttpTrigger function with Invocation Id= {invocationId} is locked= False")),
                 null,
                 It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
             Times.Never);
