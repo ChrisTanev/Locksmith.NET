@@ -17,7 +17,7 @@ public abstract class UnitTestBase<TClass>
 
         Mock<BlobClient> blobClientMock = new();
         Fixture.Register(() => blobClientMock.Object);
-        LazySut = new(() => Fixture.Create<TClass>());
+        LazySut = new Lazy<TClass>(() => Fixture.Create<TClass>());
     }
 
     protected IFixture Fixture { get; }

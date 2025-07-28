@@ -1,23 +1,31 @@
 {
-  "name": "Azure Functions .NET 9 DevContainer",
-  "build": {
-    "dockerfile": "../Dockerfile",
-    "context": ".."
-    // assumes Dockerfile is in .devcontainer folder
-  },
-  "workspaceFolder": "/workspace",
-  "settings": {
-    "terminal.integrated.shell.linux": "/bin/bash"
-  },
-  "extensions": [
-    "ms-dotnettools.csharp",
-    "ms-azuretools.vscode-azurefunctions",
-    "ms-azuretools.vscode-azureresourcegroups",
-    "ms-azuretools.vscode-azurestorage"
-  ],
-  "forwardPorts": [
-    7071
-  ],
-  "postCreateCommand": "dotnet --version && func --version",
-  "remoteUser": "root"
+    "name": "Azure Functions .NET 9 DevContainer",
+    "forwardPorts": [
+        7071,
+        10000,
+        10001,
+        10002
+    ],
+    "build": {
+        "dockerfile": "../Dockerfile",
+        "context": ".."
+    },
+    "workspaceFolder": "/workspace",
+    "postCreateCommand": "dotnet --version && func --version",
+    "remoteUser": "root",
+    "runArgs": [
+        "--user",
+        "${localEnv:UID}:${localEnv:GID}"
+    ],
+    "customizations": {
+        "jetbrains": {
+            "plugins": [
+                "com.github.copilot",
+                "me.rafaelldi.aspire"
+            ],
+            "settings": {
+                "com.intellij:app:HttpConfigurable.use_proxy_pac": true
+            }
+        }
+    }
 }
