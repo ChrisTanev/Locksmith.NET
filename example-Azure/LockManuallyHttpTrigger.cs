@@ -35,7 +35,7 @@ public class LockManuallyHttpTrigger(
                 isLocked);
 
             // Simulating some work
-            await Task.Delay(TimeSpan.FromSeconds(15), executionContext.CancellationToken);
+            await Task.Delay(TimeSpan.FromSeconds(1), executionContext.CancellationToken);
 
             HttpResponseData httpResponseData = await Task.FromResult(req.CreateResponse(HttpStatusCode.OK));
 

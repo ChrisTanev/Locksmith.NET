@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
     }
 
     private static void SetupEnvironmentalVariables(
-        IEnvironmentalSettingsProvider environmentalSettingsProvider,
+        EnvironmentalSettingsProvider environmentalSettingsProvider,
         string connectionString,
         string blobStorageAccountName,
         string blobContainerName,

@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\example-Azure\Locksmith.NET.Example.AzureFunction.csproj" />
     <ProjectReference Include="..\src\Locksmith.NET.csproj"/>
   </ItemGroup>
 
