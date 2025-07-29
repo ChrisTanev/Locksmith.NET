@@ -1,0 +1,16 @@
+{
+  "extends": ["config:base"],
+  "packageRules": [
+    {
+      "managers": ["nuget"],
+      "updateTypes": ["minor", "patch"],
+      "groupName": "nuget minor/patch updates"
+    },
+    {
+      "managers": ["nuget"],
+      "updateTypes": ["major"],
+      "groupName": null
+    }
+  ],
+    "commitMessagePrefix": "chore(deps):"
+}
