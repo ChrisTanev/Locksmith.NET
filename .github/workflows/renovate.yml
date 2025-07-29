@@ -4,16 +4,16 @@ on:
   schedule:
     - cron: '0 3 * * *'
   workflow_dispatch:
-
+  
 jobs:
   renovate:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
       - name: Run Renovate
         uses: renovatebot/github-action@v40.1.11
+        env:
+          RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
         with:
-          token: ${{ secrets.RENOVATE_TOKEN }}
+          args: >
+            --autodiscover
+            --autodiscover-filter="^your-org-or-username/.*"
