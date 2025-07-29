@@ -16,4 +16,4 @@ jobs:
         with:
           args: >
             --autodiscover
-            --autodiscover-filter="^your-org-or-username/.*"
+            --autodiscover-filter="^ChrisTanev/.*"
