@@ -11,7 +11,7 @@
         "context": ".."
     },
     "workspaceFolder": "/workspace",
-    "postCreateCommand": "dotnet --version && func --version",
+    "postCreateCommand": "dotnet --version && func --version && azurite --location /workspace/azurite --silent &",
     "remoteUser": "root",
     "runArgs": [
         "--user",
